@@ -3,22 +3,31 @@ import './App.css';
 import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
 
 export class MapContainer extends Component {
-
   constructor(props) {
     super(props);
 
-    this.state = {
-      stores: [
-        { latitude: -26.9853947, longitude: -52.603549, local: "Cordilheira Alta" },
-        { latitude: -26.9605363, longitude: -52.5335505, local: "Xaxim" },]
-    }
+    const defaultPos = {
+      lat: -22.0985498,
+      lng: -51.4170715,
+      name: 'Estádio Prudentão',
+    };
+
+    this.currPosName = defaultPos.name;
+    this.center = defaultPos;
+    this.markers = [defaultPos];
+  }
+
+  displayMarkersNames = () => {
+    return this.markers.map((marker, index) => {
+      return <span key={index}>{marker.name}</span>
+    })
   }
 
   displayMarkers = () => {
-    return this.state.stores.map((store, index) => {
+    return this.markers.map((marker, index) => {
       return <Marker key={index} id={index} position={{
-        lat: store.latitude,
-        lng: store.longitude
+        lat: marker.lat,
+        lng: marker.lng
       }}
       />
     })
@@ -26,22 +35,32 @@ export class MapContainer extends Component {
 
   render() {
     return (
+        <div className="app">
+          <h1>{this.currPosName}</h1>
+          <p>Latitude: { this.center.lat.toFixed(2) }, Longitude: { this.center.lng.toFixed(2) }</p>
 
-      <Map
-        google={this.props.google}
-        zoom={7}
-        initialCenter={{ lat: -27.0922364, lng: -52.6166878 }}
-      >
+          <div className="markers">
+            <strong>Markers: </strong>
+            {this.displayMarkersNames()}
+          </div>
 
-        {this.displayMarkers()}
-      </Map>
+          <Map
+            className="map"
+            google={this.props.google}
+            zoom={15}
+            initialCenter={this.center}
+          >
+            {this.displayMarkers()}
+          </Map>
 
+          <p>by Juliana Cochenski</p>
+        </div>
     );
   }
 }
 
 export default GoogleApiWrapper(
-  (props) => ({
+  () => ({
     apiKey: 'AIzaSyAh8dA_6j-zTOctbfc_vWCtHSCFCqGTdZQ',
   }
   ))(MapContainer)
